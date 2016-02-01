@@ -40,6 +40,13 @@
             <version>${zxing.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.jmockit</groupId>
+            <artifactId>jmockit</artifactId>
+            <version>1.21</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
 
