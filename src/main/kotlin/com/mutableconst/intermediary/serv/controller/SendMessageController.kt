@@ -1,4 +1,4 @@
-package com.mutableconst.intermediary.serv
+package com.mutableconst.intermediary.serv.controller
 
 import javax.servlet.annotation.WebServlet
 import javax.servlet.http.HttpServlet

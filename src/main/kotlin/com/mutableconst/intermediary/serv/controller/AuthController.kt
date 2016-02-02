@@ -1,4 +1,4 @@
-package com.mutableconst.intermediary.serv
+package com.mutableconst.intermediary.serv.controller
 
 import com.mutableconst.intermediary.qr.QrUtil
 import javax.imageio.ImageIO
