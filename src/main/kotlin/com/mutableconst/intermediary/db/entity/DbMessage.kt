@@ -28,7 +28,7 @@ object DbMessage {
     fun save(message: Message): Boolean {
         val contact = DbContact.getByMobile(message.mobile)
         if (contact == null) {
-            log.log(Level.ALL, "Error getting contact for message to " + message.mobile, e)
+            log.log(Level.ALL, "Error getting contact for message to " + message.mobile)
             return false
         }
 
