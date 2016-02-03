@@ -40,6 +40,7 @@ object DbContact {
         try {
             connection = DbManager.getConnection()
             query = connection.prepareStatement(ContactSql.byMobile)
+            query.setString(1, mobile)
 
             val resultSet = query.executeQuery()
 

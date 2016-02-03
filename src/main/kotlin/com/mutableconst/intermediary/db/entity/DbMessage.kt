@@ -11,8 +11,8 @@ import java.util.logging.Logger
 
 private object MessageSql {
     val insert = "insert into message " +
-            "(toClient, fromClient, contactId, message) " +
-            "values (?, ?, ?, ?, ?, ?)"
+            "(toClientId, fromClientId, contactId, message) " +
+            "values (?, ?, ?, ?)"
 
     object Columns {
     }
@@ -21,11 +21,14 @@ private object MessageSql {
 object DbMessage {
     val log = Logger.getLogger(DbContact.javaClass.name)
 
+    /**
+     * lookup contact via who we're sending to
+     * this might change to be id in future
+     */
     fun save(message: Message): Boolean {
-        // lookup contact via who we're sending to
-        // this might change to be id in future
         val contact = DbContact.getByMobile(message.mobile)
         if (contact == null) {
+            log.log(Level.ALL, "Error getting contact for message to " + message.mobile, e)
             return false
         }
 
