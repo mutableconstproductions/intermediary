@@ -1,5 +1,6 @@
-package com.mutableconst.intermediary.db
+package com.mutableconst.intermediary.db.entity
 
+import com.mutableconst.intermediary.db.DbManager
 import java.sql.Connection
 import java.sql.SQLException
 import java.sql.Statement
@@ -11,7 +12,7 @@ data class RegisterDto(val uuid: UUID,
                        val name: String,
                        val currentIp: String)
 
-private object Sql {
+private object RegisterSql {
     val getRegisteredByUuid = "select " +
             "name, currentIp " +
             "from register " +
@@ -28,8 +29,8 @@ private object Sql {
     }
 }
 
-object Register {
-    val log = Logger.getLogger(Register.javaClass.name)
+object DbRegister {
+    val log = Logger.getLogger(DbRegister.javaClass.name)
 
     fun register(clientId: UUID, appName: String, currentIp: String): Boolean {
         var connection: Connection? = null
@@ -37,7 +38,7 @@ object Register {
 
         try {
             connection = DbManager.getConnection()
-            registerStatement = connection.prepareStatement(Sql.registerWithIp)
+            registerStatement = connection.prepareStatement(RegisterSql.registerWithIp)
             registerStatement.setString(1, clientId.toString());
             registerStatement.setString(2, appName);
             registerStatement.setString(3, currentIp);
@@ -64,14 +65,14 @@ object Register {
 
         try {
             connection = DbManager.getConnection()
-            query = connection.prepareStatement(Sql.getRegisteredByUuid)
+            query = connection.prepareStatement(RegisterSql.getRegisteredByUuid)
             query.setString(1, clientId.toString())
 
             val resultSet = query.executeQuery()
 
             if (resultSet.next()) {
-                val name = resultSet.getString(Sql.Columns.name)
-                val currentIp = resultSet.getString(Sql.Columns.currentIp)
+                val name = resultSet.getString(RegisterSql.Columns.name)
+                val currentIp = resultSet.getString(RegisterSql.Columns.currentIp)
                 dto = RegisterDto(clientId, name, currentIp)
             }
             resultSet.close()
