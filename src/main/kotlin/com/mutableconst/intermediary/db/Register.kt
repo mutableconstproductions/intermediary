@@ -15,30 +15,30 @@ private object Sql {
     val getRegisteredByUuid = "select " +
             "name, currentIp " +
             "from register " +
-            "where uuid = ?"
+            "where clientId = ?"
 
     val registerWithIp = "insert or replace " +
-            "into register (uuid, name, currentIp) " +
+            "into register (clientId, name, currentIp) " +
             "values (?, ?, ?)"
 
     object Columns {
         val name = "name"
         val currentIp = "currentIp"
-        val uuid = "uuid"
+        val clientId = "clientId"
     }
 }
 
 object Register {
     val log = Logger.getLogger(Register.javaClass.name)
 
-    fun register(uuid: UUID, appName: String, currentIp: String): Boolean {
+    fun register(clientId: UUID, appName: String, currentIp: String): Boolean {
         var connection: Connection? = null
         var registerStatement: Statement? = null
 
         try {
             connection = DbManager.getConnection()
             registerStatement = connection.prepareStatement(Sql.registerWithIp)
-            registerStatement.setString(1, uuid.toString());
+            registerStatement.setString(1, clientId.toString());
             registerStatement.setString(2, appName);
             registerStatement.setString(3, currentIp);
 
@@ -57,7 +57,7 @@ object Register {
         return false
     }
 
-    fun getRegistered(uuid: UUID): RegisterDto? {
+    fun getRegistered(clientId: UUID): RegisterDto? {
         var connection: Connection? = null
         var query: Statement? = null
         var dto: RegisterDto? = null
@@ -65,14 +65,14 @@ object Register {
         try {
             connection = DbManager.getConnection()
             query = connection.prepareStatement(Sql.getRegisteredByUuid)
-            query.setString(1, uuid.toString())
+            query.setString(1, clientId.toString())
 
             val resultSet = query.executeQuery()
 
             if (resultSet.next()) {
                 val name = resultSet.getString(Sql.Columns.name)
                 val currentIp = resultSet.getString(Sql.Columns.currentIp)
-                dto = RegisterDto(uuid, name, currentIp)
+                dto = RegisterDto(clientId, name, currentIp)
             }
             resultSet.close()
             connection.close()

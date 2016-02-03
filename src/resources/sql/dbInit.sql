@@ -1,5 +1,5 @@
 create table if not exists register (
-uuid text primary key,
+clientId text primary key,
 name text not null,
 currentIp text
 );
