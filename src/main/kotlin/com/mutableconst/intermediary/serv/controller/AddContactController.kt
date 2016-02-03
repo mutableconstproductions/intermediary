@@ -3,8 +3,8 @@ package com.mutableconst.intermediary.serv.controller
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.mutableconst.intermediary.db.entity.DbContact
-import com.mutableconst.intermediary.dto.Contact
 import com.mutableconst.intermediary.dto.Response
+import com.mutableconst.intermediary.dto.request.Contact
 import com.mutableconst.intermediary.serv.util.RequestUtil
 import javax.servlet.annotation.WebServlet
 import javax.servlet.http.HttpServlet

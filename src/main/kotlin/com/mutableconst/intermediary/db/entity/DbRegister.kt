@@ -1,16 +1,13 @@
 package com.mutableconst.intermediary.db.entity
 
 import com.mutableconst.intermediary.db.DbManager
+import com.mutableconst.intermediary.dto.RegisterDto
 import java.sql.Connection
 import java.sql.SQLException
 import java.sql.Statement
 import java.util.UUID
 import java.util.logging.Level
 import java.util.logging.Logger
-
-data class RegisterDto(val uuid: UUID,
-                       val name: String,
-                       val currentIp: String)
 
 private object RegisterSql {
     val getRegisteredByUuid = "select " +
