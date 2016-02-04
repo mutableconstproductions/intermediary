@@ -2,11 +2,9 @@ package com.mutableconst.intermediary.db.entity
 
 import com.mutableconst.intermediary.db.DbManager
 import com.mutableconst.intermediary.dto.request.Message
-import java.sql.Connection
+import com.mutableconst.intermediary.etc.use
+import org.slf4j.LoggerFactory
 import java.sql.SQLException
-import java.sql.Statement
-import java.util.logging.Level
-import java.util.logging.Logger
 
 
 private object MessageSql {
@@ -19,7 +17,7 @@ private object MessageSql {
 }
 
 object DbMessage {
-    val log = Logger.getLogger(DbContact.javaClass.name)
+    val log = LoggerFactory.getLogger(DbMessage.javaClass)
 
     /**
      * lookup contact via who we're sending to
@@ -28,31 +26,24 @@ object DbMessage {
     fun save(message: Message): Boolean {
         val contact = DbContact.getByMobile(message.mobile)
         if (contact == null) {
-            log.log(Level.ALL, "Error getting contact for message to " + message.mobile)
+            log.error("Error getting contact for message to " + message.mobile)
             return false
         }
 
-        var connection: Connection? = null
-        var saveStatement: Statement? = null
         try {
-            connection = DbManager.getConnection()
-            saveStatement = connection.prepareStatement(MessageSql.insert)
-            saveStatement.setString(1, message.clientTo.toString())
-            saveStatement.setString(2, message.clientFrom.toString())
-            saveStatement.setInt(3, contact.contactId)
-            saveStatement.setString(4, message.text)
+            DbManager.getConnection().use {
+                it.prepareStatement(MessageSql.insert).use {
+                    it.setString(1, message.clientTo.toString())
+                    it.setString(2, message.clientFrom.toString())
+                    it.setInt(3, contact.contactId)
+                    it.setString(4, message.text)
 
-            saveStatement.execute()
-            return true
+                    it.execute()
+                    return true
+                }
+            }
         } catch (e: SQLException) {
-            log.log(Level.SEVERE, e.toString(), e)
-        } finally {
-            if (saveStatement != null) {
-                saveStatement.close()
-            }
-            if (connection != null) {
-                connection.close()
-            }
+            log.error(e.toString(), e)
         }
         return false
     }
