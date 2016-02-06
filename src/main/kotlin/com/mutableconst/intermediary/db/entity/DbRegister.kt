@@ -4,6 +4,7 @@ import com.mutableconst.intermediary.db.DbManager
 import com.mutableconst.intermediary.dto.RegisterDto
 import com.mutableconst.intermediary.etc.use
 import org.slf4j.LoggerFactory
+import java.sql.ResultSet
 import java.sql.SQLException
 import java.util.UUID
 
@@ -12,6 +13,11 @@ private object RegisterSql {
             "name, currentIp " +
             "from register " +
             "where clientId = ?"
+
+    val getAllExceptUuid = "select " +
+            "name, currentIp " +
+            "from register " +
+            "where clientId <> ?"
 
     val registerWithIp = "insert or replace " +
             "into register (clientId, name, currentIp) " +
@@ -64,5 +70,31 @@ object DbRegister {
             log.error(e.toString(), e)
         }
         return null
+    }
+
+    private fun createRegistered(resultSet: ResultSet): RegisterDto {
+        val clientId = UUID.fromString(resultSet.getString(RegisterSql.Columns.clientId))
+        val name = resultSet.getString(RegisterSql.Columns.name)
+        val currentIp = resultSet.getString(RegisterSql.Columns.currentIp)
+        return RegisterDto(clientId, name, currentIp)
+    }
+
+    fun getAllRegisteredFor(clientId: UUID): List<RegisterDto> {
+        try {
+            DbManager.getConnection().use {
+                it.prepareStatement(RegisterSql.getAllExceptUuid).use {
+                    it.setString(1, clientId.toString())
+
+                    val resultSet = it.executeQuery()
+                    val list: MutableList<RegisterDto> = arrayListOf()
+                    while (resultSet.next()) {
+                        list.add(createRegistered(resultSet))
+                    }
+                }
+            }
+        } catch (e: SQLException) {
+            log.error(e.toString(), e)
+        }
+        return emptyList()
     }
 }

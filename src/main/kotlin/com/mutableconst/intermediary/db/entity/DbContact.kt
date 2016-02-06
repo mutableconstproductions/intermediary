@@ -17,6 +17,10 @@ private object ContactSql {
             "from contact " +
             "where mobile = ?"
 
+    val getAllContactsForClient =  "select contactId, clientId, firstName, lastName, name, mobile, email " +
+            "from contact " +
+            "where clientId = ?"
+
     object Columns {
         val contactId = "contactId"
         val clientId = "clientId"
@@ -40,14 +44,7 @@ object DbContact {
                     val resultSet: ResultSet = it.executeQuery()
 
                     if (resultSet.next()) {
-                        val clientId = UUID.fromString(resultSet.getString(ContactSql.Columns.clientId))
-                        val contactId = resultSet.getInt(ContactSql.Columns.contactId)
-                        val firstName = resultSet.getString(ContactSql.Columns.firstName)
-                        val lastName = resultSet.getString(ContactSql.Columns.lastName)
-                        val name = resultSet.getString(ContactSql.Columns.name)
-                        val email = resultSet.getString(ContactSql.Columns.email)
-
-                        return Contact(clientId, firstName, lastName, name, mobile, email, contactId)
+                        return extractContact(resultSet)
                     }
                 }
             }
@@ -55,6 +52,18 @@ object DbContact {
             log.error(e.toString(), e)
         }
         return null
+    }
+
+    private fun extractContact(resultSet: ResultSet): Contact {
+        val clientId = UUID.fromString(resultSet.getString(ContactSql.Columns.clientId))
+        val contactId = resultSet.getInt(ContactSql.Columns.contactId)
+        val firstName = resultSet.getString(ContactSql.Columns.firstName)
+        val lastName = resultSet.getString(ContactSql.Columns.lastName)
+        val name = resultSet.getString(ContactSql.Columns.name)
+        val email = resultSet.getString(ContactSql.Columns.email)
+        val mobile = resultSet.getString(ContactSql.Columns.mobile)
+
+        return Contact(clientId, firstName, lastName, name, mobile, email, contactId)
     }
 
     fun save(contact: Contact): Boolean {
@@ -77,6 +86,25 @@ object DbContact {
             log.error(e.toString(), e)
         }
         return false
+    }
+
+    fun getContacts(clientId: UUID): List<Contact> {
+        try {
+            DbManager.getConnection().use {
+                it.prepareStatement(ContactSql.getAllContactsForClient).use {
+                    it.setString(1, clientId.toString())
+                    val resultSet = it.executeQuery()
+                    val contacts: MutableList<Contact> = arrayListOf()
+                    while (resultSet.next()) {
+                        contacts.add(extractContact(resultSet))
+                    }
+                    return contacts
+                }
+            }
+        } catch(e: Exception) {
+            log.error(e.toString(), e)
+        }
+        return emptyList()
     }
 
     private fun getName(contact: Contact): String {

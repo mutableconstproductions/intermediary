@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 
-@WebServlet(name = "Auth", value = "/auth")
+@WebServlet(name = "PollMessages", value = "/pollMessages")
 class PollMessageController : HttpServlet() {
     override fun doGet(req: HttpServletRequest, res: HttpServletResponse) {
 

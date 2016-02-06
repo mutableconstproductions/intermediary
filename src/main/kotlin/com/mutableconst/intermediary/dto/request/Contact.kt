@@ -10,3 +10,6 @@ data class Contact(val clientId: UUID,
                    val mobile: String?,
                    val email: String?,
                    val contactId: Int = 0)
+
+
+data class ContactList(val data: List<Contact>)

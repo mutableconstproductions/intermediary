@@ -9,7 +9,7 @@ import java.sql.SQLException
 
 private object MessageSql {
     val insert = "insert into message " +
-            "(toClientId, fromClientId, contactId, message) " +
+            "(fromClientId, contactId, message) " +
             "values (?, ?, ?, ?)"
 
     object Columns {
@@ -33,10 +33,9 @@ object DbMessage {
         try {
             DbManager.getConnection().use {
                 it.prepareStatement(MessageSql.insert).use {
-                    it.setString(1, message.clientTo.toString())
-                    it.setString(2, message.clientFrom.toString())
-                    it.setInt(3, contact.contactId)
-                    it.setString(4, message.text)
+                    it.setString(1, message.clientFrom.toString())
+                    it.setInt(2, contact.contactId)
+                    it.setString(3, message.text)
 
                     it.execute()
                     return true

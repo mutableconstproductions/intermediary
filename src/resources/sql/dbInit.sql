@@ -26,13 +26,12 @@ foreign key(clientId) references register(clientId)
 
 create table if not exists message (
 messageId integer primary key autoincrement,
-toClientId not null,
-fromClientId not null,
+fromClientId text not null,
 contactId integer not null,
 message text not null,
 dateAdded datetime not null default CURRENT_TIMESTAMP,
 
 foreign key(contactId) references contact(contactId),
-foreign key(toClientId) references register(clientId),
+-- foreign key(toClientId) references register(clientId),
 foreign key(fromClientId) references register(clientId)
 );
