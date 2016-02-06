@@ -10,7 +10,7 @@ import java.sql.SQLException
 private object MessageSql {
     val insert = "insert into message " +
             "(fromClientId, contactId, message) " +
-            "values (?, ?, ?, ?)"
+            "values (?, ?, ?)"
 
     object Columns {
     }
