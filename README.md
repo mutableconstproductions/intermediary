@@ -7,3 +7,7 @@ All POSTs accept ContentType `application/json`
 `/register`  clientId: UUID, appName: String
 
 `/addContact` clientId: UUID, firstName: String?, lastName: String?, name: String?, mobile: String?, email: String?
+
+## Build
+
+`mvn compile && mvn jetty:run`
