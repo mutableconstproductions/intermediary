@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.mutableconst.intermediary.db.entity.DbRegister
 import com.mutableconst.intermediary.dto.Response
 import com.mutableconst.intermediary.serv.util.RequestUtil
+import org.slf4j.LoggerFactory
 import java.util.UUID
 import javax.servlet.annotation.WebServlet
 import javax.servlet.http.HttpServlet
@@ -16,6 +17,7 @@ private data class RegisterRequest(val clientId: UUID, val appName: String)
 
 @WebServlet(name = "Register", value = "/register")
 class RegisterController : HttpServlet() {
+    val log = LoggerFactory.getLogger(RegisterController::class.java)
 
     override fun doPost(req: HttpServletRequest, res: HttpServletResponse) {
         val json = RequestUtil.readJson(req)
