@@ -8,7 +8,7 @@ create table if not exists register (
 clientId text primary key,
 name text not null,
 currentIp text,
-lastRegistered datetime not null default CURRENT_TIMESTAMP
+dateAdded int not null default(strftime('%s', 'now') * 1000)
 );
 
 create table if not exists contact (
@@ -19,7 +19,7 @@ lastName text,
 name text not null,
 mobile text unique,
 email text unique,
-dateAdded datetime not null default CURRENT_TIMESTAMP,
+dateAdded int not null default(strftime('%s', 'now') * 1000),
 
 foreign key(clientId) references register(clientId)
 );
@@ -29,7 +29,7 @@ messageId integer primary key autoincrement,
 fromClientId text not null,
 contactId integer not null,
 message text not null,
-dateAdded datetime not null default CURRENT_TIMESTAMP,
+dateAdded int not null default(strftime('%s', 'now') * 1000),
 
 foreign key(contactId) references contact(contactId),
 -- foreign key(toClientId) references register(clientId),

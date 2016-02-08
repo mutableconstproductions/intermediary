@@ -6,7 +6,6 @@ import com.mutableconst.intermediary.etc.use
 import org.slf4j.LoggerFactory
 import java.sql.ResultSet
 import java.sql.SQLException
-import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.UUID
 
@@ -19,7 +18,7 @@ private object MessageSql {
             """
 
     val allMessagesSince = """
-            select msg.fromClientId, msg.message, ct.mobile, datetime(msg.dateAdded) as dateAdded
+            select msg.fromClientId, msg.message, ct.mobile, msg.dateAdded
             from message msg
             join contact ct
             on msg.contactId = ct.contactId
@@ -45,17 +44,16 @@ object DbMessage {
         val message = resultSet.getString(MessageSql.Columns.message)
         val fromClientId = UUID.fromString(resultSet.getString(MessageSql.Columns.fromClientId))
         val mobile = resultSet.getString(MessageSql.Columns.mobile)
-        val dateSent: Long = dateformat.parse(resultSet.getString(MessageSql.Columns.dateSent)).time
+        val dateSent: Long = resultSet.getLong(MessageSql.Columns.dateSent)
         return Message(fromClientId, mobile, message, dateSent)
     }
 
     fun getAllMessagesSince(uuid: UUID, timestamp: Long): Collection<Message> {
         val messages: MutableCollection<Message> = arrayListOf()
-        val date = Timestamp(timestamp)
         try {
             DbManager.getConnection().use {
                 it.prepareStatement(MessageSql.allMessagesSince).use {
-                    it.setTimestamp(1, date)
+                    it.setLong(1, timestamp)
                     it.setString(2, uuid.toString())
                     it.executeQuery().use {
                         while (it.next()) {
@@ -65,7 +63,7 @@ object DbMessage {
                 }
             }
         } catch (e: SQLException) {
-            log.error("""Error polling messages at datetime: $date, ${MessageSql.allMessagesSince}""", e);
+            log.error("""Error polling messages at datetime: $timestamp, ${MessageSql.allMessagesSince}""", e);
         }
         return messages
     }
